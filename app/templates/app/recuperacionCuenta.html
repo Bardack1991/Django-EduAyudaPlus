@@ -1,0 +1,22 @@
+{% extends "app/base.html" %}
+
+{% block title %}Recuperar cuenta - Edu Ayuda Plus{% endblock %}
+
+{% block content %}
+<div class="container-formulario">
+  <div class="row">
+    <div class="col">
+      <div class="form-container">
+        <h2 class="text-center">Recuperación de Contraseña</h2>
+        <form id="passwordRecoveryForm">
+          <div class="form-group">
+            <label for="email">Correo Electrónico</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Enviar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
