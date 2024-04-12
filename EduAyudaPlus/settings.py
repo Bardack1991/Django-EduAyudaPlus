@@ -136,3 +136,8 @@ DATABASES = {
         }
     }
 }
+
+ROLES = (
+    ('admin', 'Administrador'),
+    ('cliente', 'Cliente'),
+)
