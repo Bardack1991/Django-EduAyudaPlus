@@ -5,14 +5,14 @@
 {% block content %}
 <div class="container-formulario">
   <h1 id="titulo-formulario">Registro de Compradores</h1>
-  <form id="registroForm" novalidate>
+  <form id="registroForm" method="post" action="{% url 'registro' %}">
       <div class="form-group">
-          <label for="nombre">Nombre completo</label>
+          <label for="nombre">Nombre </label>
           <input type="text" class="form-control" id="nombre" name="nombre" required>
       </div>
       <div class="form-group">
-          <label for="usuario">Nombre de usuario</label>
-          <input type="text" class="form-control" id="usuario" name="usuario" required>
+        <label for="nombre">Apellido </label>
+        <input type="text" class="form-control" id="apellido" name="apellido" required>
       </div>
       <div class="form-group">
           <label for="email">Correo electrónico</label>
@@ -28,14 +28,7 @@
           <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" minlength="6"
               maxlength="18" required>
       </div>
-      <div class="form-group">
-          <label for="fechaNacimiento">Fecha de nacimiento</label>
-          <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" required>
-      </div>
-      <div class="form-group">
-          <label for="direccion">Dirección de despacho (opcional)</label>
-          <input type="text" class="form-control" id="direccion" name="direccion">
-      </div>
+      {% csrf_token %}
       <button type="submit" class="btn btn-primary">Enviar</button>
       <button type="reset" class="btn btn-secondary">Limpiar</button>
   </form>
