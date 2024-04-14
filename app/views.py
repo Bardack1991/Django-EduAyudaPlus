@@ -108,7 +108,6 @@ def carga_archivo(request):
             fecha_subida=timezone.now()
         )
         
-        # Registrar el servicio en el historial
         HistorialServicios.objects.create(
             fecha_servicio=timezone.now(),
             servicio=servicio,
@@ -126,6 +125,6 @@ def eliminar_archivo(request, archivo_id):
     if request.method == 'POST':
         archivo = get_object_or_404(ArchivosUsuario, id=archivo_id, id_usuario=request.user)
         archivo.delete()
-        return redirect('menu-usuario')  # Redirige a la vista que muestra los archivos
+        return redirect('menu-usuario')
     else:
         return HttpResponse("Método no permitido", status=405)
