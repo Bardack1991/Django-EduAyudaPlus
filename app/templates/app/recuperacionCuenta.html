@@ -1,4 +1,5 @@
 {% extends "app/base.html" %}
+{% load static %}
 
 {% block title %}Recuperar cuenta - Edu Ayuda Plus{% endblock %}
 
@@ -19,4 +20,8 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/scriptRecuperacionCuenta.js' %}"></script>
 {% endblock %}

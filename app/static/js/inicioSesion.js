@@ -1,23 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
     var loginForm = document.getElementById('formulario-login');
     loginForm.addEventListener('submit', function (event) {
-        console.log(event.data);
-        event.preventDefault();
-        if (validarFormulario()) {
-            alert('Formulario enviado correctamente');
+        if (!validarFormulario()) {
+            event.preventDefault();
         }
     });
 });
 
 function validarFormulario() {
-    var email = document.getElementById('email').value.trim();
+    var email = document.getElementById('emailLogin').value.trim();
     if (!isValidEmail(email)) {
         alert('Por favor, ingrese un correo electrónico válido.');
         return false;
     }
 
-    var password = document.getElementById('password').value;
-    if (password === '' ) {
+    var password = document.getElementById('passwordLogin').value;
+    if (password === '') {
         alert('Por favor, complete el campo de contraseña.');
         return false;
     }

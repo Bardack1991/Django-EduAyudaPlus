@@ -1,3 +1,16 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const servicioSelector = document.querySelector('.form-select[aria-label="selectorServicio"]');
+  const divSelectorIdioma = document.getElementById('divSelectorIdioma');
+
+  servicioSelector.addEventListener('change', function () {
+    if (this.value === "3") {
+      divSelectorIdioma.style.display = 'block';
+    } else {
+      divSelectorIdioma.style.display = 'none';
+    }
+  });
+});
+
 document.getElementById("texto-a-voz").onclick = function() {
     generateContent("Texto a voz");
   };
@@ -57,9 +70,11 @@ document.getElementById("texto-a-voz").onclick = function() {
       uploadButtonDiv.className = "d-grid gap-2";
     
       const uploadButton = document.createElement("button");
-      uploadButton.className = "btn btn-primary";
+      uploadButton.className = "btn btn-primary w-100";
       uploadButton.textContent = "Subir nuevo archivo";
       uploadButton.type = "button";
+      uploadButton.setAttribute("data-bs-toggle", "modal");
+      uploadButton.setAttribute("data-bs-target", "#exampleModal");
     
       uploadButtonDiv.appendChild(uploadButton);
     

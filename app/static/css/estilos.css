@@ -20,6 +20,7 @@
 .accion-usuario {
     display: inline-block;
     margin: 0 10px;
+    cursor: pointer;
 }
 
 .accion-usuario:hover {

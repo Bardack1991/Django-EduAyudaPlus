@@ -1,17 +1,18 @@
 {% extends "app/base.html" %}
+{% load static %}
 
 {% block title %}Registro de Compradores - Edu Ayuda Plus{% endblock %}
 
 {% block content %}
 <div class="container-formulario">
   <h1 id="titulo-formulario">Registro de Compradores</h1>
-  <form id="registroForm" method="post" action="{% url 'registro' %}">
+  <form id="registroForm" method="post" action="{% url 'registro' %}" novalidate>
       <div class="form-group">
           <label for="nombre">Nombre </label>
           <input type="text" class="form-control" id="nombre" name="nombre" required>
       </div>
       <div class="form-group">
-        <label for="nombre">Apellido </label>
+        <label for="apellido">Apellido </label>
         <input type="text" class="form-control" id="apellido" name="apellido" required>
       </div>
       <div class="form-group">
@@ -33,4 +34,8 @@
       <button type="reset" class="btn btn-secondary">Limpiar</button>
   </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/scriptFormularioRegistro.js' %}"></script>
 {% endblock %}

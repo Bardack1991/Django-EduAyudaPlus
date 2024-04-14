@@ -1,22 +1,13 @@
-{% load static %}
 {% extends "app/base.html" %}
+{% load static %}
 
 {% block title %}Editar Cuenta de Usuario - Edu Ayuda Plus{% endblock %}
 
 {% block content %}
 <div class="container-formulario">
   <h1 id="titulo-formulario">Editar Cuenta de Usuario</h1>
-  <form id="editarCuentaForm" novalidate>
-    <div class="form-group">
-      <label for="usuario">Nombre de usuario</label>
-      <input
-        type="text"
-        class="form-control"
-        id="usuario"
-        name="usuario"
-        required
-      />
-    </div>
+  <form id="editarCuentaForm" method="post" novalidate>
+    {% csrf_token %}
     <div class="form-group">
       <label for="email">Correo electrónico</label>
       <input
@@ -24,21 +15,15 @@
         class="form-control"
         id="email"
         name="email"
+        value="{{ user.email }}"
         required
       />
     </div>
     <div class="form-group">
-      <label for="password">Contraseña</label>
-      <input
-        type="password"
-        class="form-control"
-        id="password"
-        name="password"
-        minlength="6"
-        maxlength="18"
-        required
-      />
-    </div>
+      <label for="password">Nueva contraseña</label>
+      <input type="password" class="form-control" id="password" name="password" minlength="6" maxlength="18" aria-describedby="togglePasswordVisibility" placeholder="Si no requiere nueva contraseña, dejar en blanco">
+
+    </div>    
     <div class="form-group">
       <label for="confirmPassword">Confirmar contraseña</label>
       <input
@@ -55,4 +40,8 @@
     <button type="reset" class="btn btn-secondary">Limpiar</button>
   </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/editarCuenta.js' %}"></script>
 {% endblock %}

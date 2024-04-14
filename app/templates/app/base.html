@@ -19,20 +19,14 @@
 <body>
     {% include "app/navbar.html" %}
     {% block content %}
-    <h2>hola</h2>
     {% endblock %}
     {% include "app/footer.html" %}
-    
-    
-<!--     <script src="{% static 'js/funciones.js' %}"></script>
-    <script src="{% static 'js/editarCuenta.js' %}"></script>
-    <script src="{% static 'js/scriptFormularioRegistro.js' %}"></script>
-    <script src="{% static 'js/inicioSesion.js' %}"></script>
-    <script src="{% static 'js/menuUsuario.js' %}"></script>
-    <script src="{% static 'js/scriptRecuperacionCuenta.js' %}"></script> -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
+    {% block scripts %}
+    {% endblock %}
 </body>
 
 </html>
