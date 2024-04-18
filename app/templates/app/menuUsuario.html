@@ -1,30 +1,123 @@
 {% extends "app/base.html" %}
+{% load static %}
 
-{% block title %}Mi cuents - Edu Ayuda Plus{% endblock %}
+{% block title %}Mi cuenta - Edu Ayuda Plus{% endblock %}
 
 {% block content %}
 <div class="container">
   <div class="row py-5">
       <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 border-custom">
         <div class="vstack gap-2">
-          <img class="w-100 border border-primary rounded-circle" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMg_4QMb_SkaPs0XXddwSldTXcgQCi2tdk0w&usqp=CAU" alt="foto de perfil usuario" />
-          <h2 class="text-center text-md-start">Nombre usuario</h1>
-          <h5 class="text-center text-md-start">Fecha registro</h5>
+          <img class="w-100 border border-primary rounded-circle" src="{{ user.profile_picture_url|default:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMg_4QMb_SkaPs0XXddwSldTXcgQCi2tdk0w&usqp=CAU' }}" alt="foto de perfil usuario">
+          <h2 class="text-center text-md-start">{{ user.get_full_name|default:'Usuario' }}</h2>
+          <a href="{% url 'editar-cuenta' %}" class="btn btn-sm btn-info w-100 w-md-75 mb-2">Editar cuenta</a>
           <button class="btn btn-sm btn-danger w-100 w-md-75 mb-4">Eliminar cuenta</button>
         </div>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-6 col-lg-9">
         <div class="accion-container">
-          <span id="texto-a-voz" class="accion-usuario mx-2">Texto a voz</span>
-          <span id="voz-a-texto" class="accion-usuario mx-2">Voz a texto</span>
-          <span id="traduccion-texto" class="accion-usuario mx-2">Traducción texto</span>
+          <span>Mis archivos guardados</span>
+
         </div>
         <div id="accion-contenido" class="accion-contenido my-3 w-100 h-100">
           <div class="d-flex align-items-center justify-content-center w-100 h-100">
-            <h5 class="text-center ">Bienvenido, disfruta de nuestros servicios.</h5>
+            <div class="mis-archivos vstack gap-3">
+              <h5 class="text-center mb-0">Bienvenido, {{ user.first_name|default:'invitado' }}. Disfruta de nuestros servicios.</h5>
+              <div class="w-100 d-flex justify-content-center">
+                <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  Subir archivo
+                </button>
+              </div>
+              <div class="lista-archivos">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Nombre del Archivo</th>
+                      <th scope="col">Servicio</th>
+                      <th scope="col">Fecha de Subida</th>
+                      <th scope="col">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for archivo in archivos %}
+                    <tr class="archivo-item">
+                      <td><strong>{{ archivo.nombre_archivo }}</strong></td>
+                      <td>{{ archivo.tipo_servicio.nombre_servicio }}</td>
+                      <td>{{ archivo.fecha_subida|date:"Y-m-d H:i" }}</td>
+                      <td>
+                        <div class="d-flex justify-content-between">
+                          <button class="btn btn-outline-secondary btn-sm" onclick="location.href='{{ archivo.url_archivo }}'">
+                            <i class="bi bi-download"></i> Descargar
+                          </button>
+                          <form action="{% url 'eliminar_archivo' archivo.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Estás seguro de querer eliminar este archivo?');">
+                              <i class="bi bi-trash3"></i> Borrar
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="4">No hay archivos subidos aún.</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
   </div>
 </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <form method="post" enctype="multipart/form-data" action="{% url 'carga_archivo' %}">
+    {% csrf_token %}
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nuevo servicio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Seleccione su archivo y el servicio deseado. Una vez seleccionado, el archivo será procesado según el servicio que elija. Posteriormente, se generará un archivo resultante que podrá descargar directamente desde esta plataforma.</p>
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Archivo (.txt, .mp3)</label>
+            <input class="form-control" type="file" id="formFile" name="archivo">
+          </div>
+          <div class="mb-3">
+            <label for="nombreArchivo" class="form-label">Nombre del archivo</label>
+            <input type="text" class="form-control" id="nombreArchivo" name="nombreArchivo">
+          </div>
+          <div class="mb-3">
+            <label for="selectorServicio" class="form-label">Servicio</label>
+            <select class="form-select" id="selectorServicio" name="servicio">
+              <option value="1">Voz a texto</option>
+              <option value="2">Texto a voz</option>
+              <option value="3">Traducción</option>
+            </select>
+          </div>
+          <div class="mb-3" id="divSelectorIdioma" style="display: none;">
+            <label for="selectorIdioma" class="form-label">Idioma</label>
+            <select class="form-select" id="selectorIdioma" aria-label="selectorIdioma">
+              <option selected>Seleccione un idioma</option>
+              <option value="es">Español</option>
+              <option value="en">Inglés</option>
+              <option value="fr">Francés</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Subir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/menuUsuario.js' %}"></script>
 {% endblock %}

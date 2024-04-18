@@ -41,24 +41,6 @@ input[type="date"] {
     box-sizing: border-box;
 }
 
-button[type="submit"],
-button[type="reset"] {
-    display: inline-block;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-}
-
-button[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
 button[type="reset"] {
     background-color: #6c757d;
     color: #fff;

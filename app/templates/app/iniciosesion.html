@@ -1,4 +1,5 @@
 {% extends "app/base.html" %}
+{% load static %}
 
 {% block title %}Inicio de Sesión - Edu Ayuda Plus{% endblock %}
 
@@ -6,23 +7,27 @@
 <section>
   <div class="container-formulario">
     <h1 id="titulo-formulario">Inicio de Sesión</h1>
-    <form id="formulario-login" novalidate>
+    <form form id="formulario-login" method="post" novalidate>
       <div class="form-group">
         <label for="email">Correo electrónico</label>
-        <input type="email" class="form-control" id="email" name="email" required />
+        <input type="email" class="form-control" id="emailLogin" name="email" required />
       </div>
       <div class="form-group">
         <label for="password">Contraseña</label>
-        <input type="password" class="form-control" id="password" name="password" minlength="6" maxlength="18"
+        <input type="password" class="form-control" id="passwordLogin" name="password" minlength="6" maxlength="18"
           required />
       </div>
       <div class="vstack gap-3"> 
-        <a href="./formularios/recuperacionCuenta.html">Recuperar contraseña</a>
+        <a href="{% url 'recuperar-cuenta' %}">Recuperar contraseña</a>
+        {% csrf_token %}
         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
       </div>
-
     </form>
 
   </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/inicioSesion.js' %}"></script>
 {% endblock %}
