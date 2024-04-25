@@ -28,6 +28,22 @@
                   Subir archivo
                 </button>
               </div>
+              {% if messages %}
+              <div class="alert-container">
+                  {% for message in messages %}
+                  <div class="alert
+                      {% if 'error' in message.tags %}
+                          alert-danger
+                      {% elif 'warning' in message.tags %}
+                          alert-warning
+                      {% else %}
+                          alert-success
+                      {% endif %}">
+                      {{ message }}
+                  </div>
+                  {% endfor %}
+              </div>
+              {% endif %}
               <div class="lista-archivos">
                 <table class="table">
                   <thead>
@@ -75,27 +91,28 @@
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <form method="post" enctype="multipart/form-data" action="{% url 'carga_archivo' %}">
     {% csrf_token %}
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Nuevo servicio</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Seleccione su archivo y el servicio deseado. Una vez seleccionado, el archivo será procesado según el
-          servicio que elija. Posteriormente, se generará un archivo resultante que podrá descargar directamente desde
-          esta plataforma.</p>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Nuevo servicio</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Seleccione su archivo y el servicio deseado. Una vez seleccionado, el archivo será procesado según el
+            servicio que elija. Posteriormente, se generará un archivo resultante que podrá descargar directamente desde
+            esta plataforma.</p>
           <div class="mb-3">
             <label for="formFile" class="form-label">Archivo (.txt, .mp3)</label>
-            <input class="form-control" type="file" id="formFile" name="archivo">
+            <input class="form-control" type="file" id="formFile" name="archivo" required>
           </div>
           <div class="mb-3">
             <label for="nombreArchivo" class="form-label">Nombre del archivo</label>
-            <input type="text" class="form-control" id="nombreArchivo" name="nombreArchivo">
+            <input type="text" class="form-control" id="nombreArchivo" name="nombreArchivo" required>
           </div>
           <div class="mb-3">
             <label for="selectorServicio" class="form-label">Servicio</label>
-            <select class="form-select" id="selectorServicio" name="servicio">
+            <select class="form-select" id="selectorServicio" name="servicio" required>
+              <option value="">Seleccione un servicio...</option>
               <option value="1">Voz a texto</option>
               <option value="2">Texto a voz</option>
             </select>
@@ -105,9 +122,11 @@
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-primary">Subir</button>
         </div>
-      </form>
+      </div>
     </div>
-  </div>
+  </form>
+</div>
+</div>
 </div>
 {% endblock %}
 {% block scripts %}

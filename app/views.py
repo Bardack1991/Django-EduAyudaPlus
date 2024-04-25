@@ -130,10 +130,15 @@ def carga_archivo(request):
         file_extension = archivo.name.split('.')[-1]
 
         if file_extension not in supported_formats:
-            messages.error(request, "Formato de archivo no soportado.")
-            return redirect('carga-archivo')
+            messages.warning(request, "Formato de archivo no soportado.")
+            return redirect('menu-usuario')
 
         if servicio_id == '1':  #Voz a texto
+
+            if file_extension != 'mp3':
+                messages.warning(request, "El archivo debe tener extension .mp3.")
+                return redirect('menu-usuario')
+            
             with tempfile.NamedTemporaryFile(delete=False, suffix='.' + archivo.name.split('.')[-1]) as tmp:
                 for chunk in archivo.chunks():
                     tmp.write(chunk)
@@ -166,6 +171,11 @@ def carga_archivo(request):
                     text_file_path.unlink()
 
         if servicio_id == '2': #Texto a voz
+
+            if file_extension != 'txt':
+                messages.warning(request, "El archivo debe tener extension .txt.")
+                return redirect('menu-usuario')
+
             file_content = archivo.read().decode('utf-8')
             client = OpenAI()
             response = client.audio.speech.create(
