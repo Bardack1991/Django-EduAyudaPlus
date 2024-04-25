@@ -46,7 +46,7 @@
                       <td>{{ archivo.fecha_subida|date:"Y-m-d H:i" }}</td>
                       <td>
                         <div class="d-flex justify-content-between">
-                          <button class="btn btn-outline-secondary btn-sm" onclick="location.href='{{ archivo.url_archivo }}'">
+                          <button class="btn btn-outline-secondary btn-sm" onclick="window.open('{{ archivo.url_archivo }}', '_blank');">
                             <i class="bi bi-download"></i> Descargar
                           </button>
                           <form action="{% url 'eliminar_archivo' archivo.id %}" method="post">
@@ -82,7 +82,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p>Seleccione su archivo y el servicio deseado. Una vez seleccionado, el archivo será procesado según el servicio que elija. Posteriormente, se generará un archivo resultante que podrá descargar directamente desde esta plataforma.</p>
+        <p>Seleccione su archivo y el servicio deseado. Una vez seleccionado, el archivo será procesado según el
+          servicio que elija. Posteriormente, se generará un archivo resultante que podrá descargar directamente desde
+          esta plataforma.</p>
           <div class="mb-3">
             <label for="formFile" class="form-label">Archivo (.txt, .mp3)</label>
             <input class="form-control" type="file" id="formFile" name="archivo">
@@ -96,16 +98,6 @@
             <select class="form-select" id="selectorServicio" name="servicio">
               <option value="1">Voz a texto</option>
               <option value="2">Texto a voz</option>
-              <option value="3">Traducción</option>
-            </select>
-          </div>
-          <div class="mb-3" id="divSelectorIdioma" style="display: none;">
-            <label for="selectorIdioma" class="form-label">Idioma</label>
-            <select class="form-select" id="selectorIdioma" aria-label="selectorIdioma">
-              <option selected>Seleccione un idioma</option>
-              <option value="es">Español</option>
-              <option value="en">Inglés</option>
-              <option value="fr">Francés</option>
             </select>
           </div>
         </div>
