@@ -1,5 +1,4 @@
 import os
-import shutil 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -7,13 +6,18 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import ArchivosUsuario, HistorialServicios, Servicio
+from .models import ArchivosUsuario, HistorialServicios, Servicio, Token
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from openai import OpenAI
 from pathlib import Path
 from google.cloud import storage
 from dotenv import load_dotenv
 import tempfile
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from urllib.parse import quote
+from .serializers import ServicioSerializer, HistorialServiciosSerializer
 
 load_dotenv()
 
@@ -104,7 +108,7 @@ def logout_view(request):
     return redirect('inicio')
 
 @login_required
-def carga_archivo(request):
+def carga_archivo(request, api=False):
     if request.method == 'POST':
         archivo = request.FILES.get('archivo')
         nombre_archivo = request.POST.get('nombreArchivo')
@@ -133,7 +137,7 @@ def carga_archivo(request):
             messages.warning(request, "Formato de archivo no soportado.")
             return redirect('menu-usuario')
 
-        if servicio_id == '1':  #Voz a texto
+        if servicio_id == '2':  #Voz a texto
 
             if file_extension != 'mp3':
                 messages.warning(request, "El archivo debe tener extension .mp3.")
@@ -170,7 +174,7 @@ def carga_archivo(request):
                 if text_file_path.exists():
                     text_file_path.unlink()
 
-        if servicio_id == '2': #Texto a voz
+        if servicio_id == '1': #Texto a voz
 
             if file_extension != 'txt':
                 messages.warning(request, "El archivo debe tener extension .txt.")
@@ -208,8 +212,12 @@ def carga_archivo(request):
             archivo_usuario.url_archivo = public_url
             archivo_usuario.save()
 
+        if api:
+            return JsonResponse({'message': 'Archivo cargado exitosamente', 'url': public_url}, status=200)
         return redirect('menu-usuario')
     else:
+        if api:
+            return JsonResponse({'error': 'Método no permitido'}, status=405)
         return render(request, 'app/inicio.html')
 
     
@@ -222,7 +230,7 @@ def eliminar_archivo(request, archivo_id):
     else:
         return HttpResponse("Método no permitido", status=405)
 
-""" Utils """
+# Funciones de utilidad carga archivos
 
 def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
     try:
@@ -230,7 +238,8 @@ def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(source_file_name)
-        public_url = f"https://storage.googleapis.com/{bucket_name}/{destination_blob_name}"
+        quoted_blob_name = quote(destination_blob_name)
+        public_url = f"https://storage.googleapis.com/{bucket_name}/{quoted_blob_name}"
         print(f"Archivo subido exitosamente: {public_url}")
         return public_url
     except Exception as e:
@@ -245,3 +254,62 @@ def make_blob_public(bucket_name, blob_name):
     blob.make_public()
 
     print(f"Blob {blob_name} is now publicly accessible at {blob.public_url}")
+
+# Metodos API Rest
+
+@csrf_exempt
+def get_token(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user:
+            token = Token.objects.create(user=user)
+            return JsonResponse({'token': str(token.token)})
+        else:
+            return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def verificar_token(request):
+    token_str = request.headers.get('Authorization')
+    if token_str:
+        try:
+            token_uuid = token_str.split()[1]
+            token = Token.objects.get(token=token_uuid)
+            if token.is_expired():
+                return JsonResponse({'error': 'Token expirado'}, status=401)
+            request.user = token.user
+        except (Token.DoesNotExist, IndexError):
+            return JsonResponse({'error': 'Token inválido'}, status=401)
+    else:
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Autenticación requerida'}, status=401)
+    return None
+
+@csrf_exempt
+def carga_archivo_api(request):
+    response = verificar_token(request)
+    if isinstance(response, JsonResponse):
+        return response
+    return carga_archivo(request, api=True)
+
+@csrf_exempt
+def servicio_list(request):
+    token_response = verificar_token(request)
+    if token_response is not None:
+        return token_response
+
+    servicios = Servicio.objects.all()
+    serializer = ServicioSerializer(servicios, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@csrf_exempt
+def historial_servicios_list(request):
+    token_response = verificar_token(request)
+    if token_response is not None:
+        return token_response
+
+    historial = HistorialServicios.objects.all()
+    serializer = HistorialServiciosSerializer(historial, many=True)
+    return JsonResponse(serializer.data, safe=False)
